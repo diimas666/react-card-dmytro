@@ -25,7 +25,10 @@ function HomePage() {
     setQuestions({ data, pages });
     return { data, pages };
   });
-
+  const activePage = useMemo(() => {
+    const params = new URLSearchParams(searchParams.replace(/^\?/, ""));
+    return Number(params.get("_page")) || 1;
+  }, [searchParams]);
   const cards = useMemo(() => {
     const list = questions?.data ?? [];
     if (search.trim()) {
@@ -54,6 +57,14 @@ function HomePage() {
     setSortSelectValue(e.target.value);
     setSearchParams(`?_page=1&_per_page=${DEFAULT_PER_PAGE}&${e.target.value}`);
   };
+
+  const paginationHandler = (e) => {
+    if (e.target.tagName === "BUTTON") {
+      setSearchParams(
+        `?_page=${e.target.textContent}&_per_page=${DEFAULT_PER_PAGE}&${sortSelectValue}`,
+      );
+    }
+  };
   return (
     <>
       <div className={styles.controlsContainer}>
@@ -76,12 +87,15 @@ function HomePage() {
       {error && <div>{error}</div>}
       <QuestionCardList cards={cards} />
       {!isLoading && cards.length === 0 && <div>No cards found</div>}
-
-      <div className={styles.paginationContainer}>
-        {pagination.map((value) => {
-          return <Button key={value}>{value}</Button>;
-        })}
-      </div>
+      {!isLoading && cards.length > 0 && pagination.length > 1 && (
+        <div className={styles.paginationContainer} onClick={paginationHandler}>
+          {pagination.map((value) => (
+            <Button isActive={value === activePage} key={value}>
+              {value}
+            </Button>
+          ))}
+        </div>
+      )}
       {/* <button onClick={getQuestions}>Get Questions</button> */}
     </>
   );
