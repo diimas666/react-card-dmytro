@@ -10,9 +10,9 @@ import { useMemo } from "react";
 const DEFAULT_PER_PAGE = 10;
 function HomePage() {
   const [searchParams, setSearchParams] = useState(
-    `?page=1&_per_page=${DEFAULT_PER_PAGE}`,
+    `?_page=1&_per_page=${DEFAULT_PER_PAGE}`,
   );
-  const [questions, setQuestions] = useState({});
+  const [questions, setQuestions] = useState([]);
   const [search, setSearch] = useState("");
   const [sortSelectValue, setSortSelectValue] = useState("");
   const [getQuestions, isLoading, error] = useFetch(async (url) => {
@@ -23,16 +23,13 @@ function HomePage() {
   });
 
   const cards = useMemo(() => {
-    if (questions?.data) {
-      if (search.trim()) {
-        return questions.data.filter((card) =>
-          card.question.toLowerCase().includes(search.trim().toLowerCase()),
-        );
-      } else {
-        return questions.data;
-      }
+    const list = Array.isArray(questions) ? questions : [];
+    if (search.trim()) {
+      return list.filter((card) =>
+        card.question.toLowerCase().includes(search.trim().toLowerCase()),
+      );
     }
-    return [];
+    return list;
   }, [questions, search]);
 
   useEffect(() => {
@@ -69,7 +66,7 @@ function HomePage() {
       <Loader isLoading={isLoading} />
       {error && <div>{error}</div>}
       <QuestionCardList cards={cards} />
-      {cards.length === 0 && <div>No cards found</div>}
+      {!isLoading && cards.length === 0 && <div>No cards found</div>}
       {/* <button onClick={getQuestions}>Get Questions</button> */}
     </>
   );
