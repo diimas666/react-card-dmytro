@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./HomePage.module.css";
 import { API_URL } from "../../constants";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { QuestionCardList } from "../../components/QuestionCardList";
 import { Loader } from "../../components/Loader";
 import { useFetch } from "../../hooks/useFetch";
@@ -16,6 +16,9 @@ function HomePage() {
   const [questions, setQuestions] = useState({ data: [], pages: 0 });
   const [search, setSearch] = useState("");
   const [sortSelectValue, setSortSelectValue] = useState("");
+
+  const controlsContainerRef = useRef(null);
+
   const [getQuestions, isLoading, error] = useFetch(async (url) => {
     const response = await fetch(`${API_URL}/${url}`);
     const data = await response.json();
@@ -63,11 +66,12 @@ function HomePage() {
       setSearchParams(
         `?_page=${e.target.textContent}&_per_page=${DEFAULT_PER_PAGE}&${sortSelectValue}`,
       );
+      controlsContainerRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
   return (
     <>
-      <div className={styles.controlsContainer}>
+      <div className={styles.controlsContainer} ref={controlsContainerRef}>
         <SearchInput value={search} onChange={searchValueHandler} />
         {/* controls  */}
         <select
