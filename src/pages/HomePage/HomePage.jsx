@@ -7,23 +7,27 @@ import { Loader } from "../../components/Loader";
 import { useFetch } from "../../hooks/useFetch";
 import { SearchInput } from "../../components/SearchInput";
 import { useMemo } from "react";
+import { Button } from "../../components/Button";
 const DEFAULT_PER_PAGE = 10;
 function HomePage() {
   const [searchParams, setSearchParams] = useState(
     `?_page=1&_per_page=${DEFAULT_PER_PAGE}`,
   );
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState({ data: [], pages: 0 });
   const [search, setSearch] = useState("");
   const [sortSelectValue, setSortSelectValue] = useState("");
   const [getQuestions, isLoading, error] = useFetch(async (url) => {
     const response = await fetch(`${API_URL}/${url}`);
-    const questions = await response.json();
-    setQuestions(questions);
-    return questions;
+    const data = await response.json();
+    const totalCount =
+      Number(response.headers.get("X-Total-Count")) || data.length;
+    const pages = Math.ceil(totalCount / DEFAULT_PER_PAGE);
+    setQuestions({ data, pages });
+    return { data, pages };
   });
 
   const cards = useMemo(() => {
-    const list = Array.isArray(questions) ? questions : [];
+    const list = questions?.data ?? [];
     if (search.trim()) {
       return list.filter((card) =>
         card.question.toLowerCase().includes(search.trim().toLowerCase()),
@@ -31,7 +35,12 @@ function HomePage() {
     }
     return list;
   }, [questions, search]);
-
+  const pagination = useMemo(() => {
+    const totalPages = questions?.pages || 0;
+    return Array(totalPages)
+      .fill(0)
+      .map((_, i) => i + 1);
+  }, [questions]);
   useEffect(() => {
     // getQuestion(`react?${searchParams}`);
     getQuestions(`react${searchParams}`);
@@ -67,6 +76,12 @@ function HomePage() {
       {error && <div>{error}</div>}
       <QuestionCardList cards={cards} />
       {!isLoading && cards.length === 0 && <div>No cards found</div>}
+
+      <div className={styles.paginationContainer}>
+        {pagination.map((value) => {
+          return <Button key={value}>{value}</Button>;
+        })}
+      </div>
       {/* <button onClick={getQuestions}>Get Questions</button> */}
     </>
   );
