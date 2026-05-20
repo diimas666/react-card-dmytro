@@ -4,7 +4,7 @@ import { Badge } from "../../components/Badge";
 import { Button } from "../../components/Button";
 import { Loader } from "../../components/Loader";
 import { useId, useState, useEffect } from "react";
-import { useFetch } from "../../hooks/useFetch";
+import { useFetch, parseJsonResponse } from "../../hooks/useFetch";
 import { API_URL } from "../../constants";
 
 function QuestionPage() {
@@ -14,7 +14,7 @@ function QuestionPage() {
   const { id } = useParams();
   const [fetchCard, isCardLoading] = useFetch(async () => {
     const response = await fetch(`${API_URL}/react/${id}`);
-    const data = await response.json();
+    const data = await parseJsonResponse(response);
     setCard(data);
     setIsChecked(Boolean(data.completed));
     return data;
@@ -26,7 +26,7 @@ function QuestionPage() {
       body: JSON.stringify({ completed: isChecked }),
       headers: { "Content-Type": "application/json" },
     });
-    const data = await response.json();
+    const data = await parseJsonResponse(response);
     setCard(data);
   });
 
@@ -39,12 +39,13 @@ function QuestionPage() {
     updateCard(!isChecked);
   };
   useEffect(() => {
+    setCard(null);
     fetchCard();
   }, [id]);
   return (
     <>
       <Loader isLoading={isCardLoading} />
-      {card !== null && (
+      {card?.id && (
         <div className={styles.container}>
           <div className={styles.cardLabels}>
             <Badge variant={levelVariant}>Level: {card.level}</Badge>

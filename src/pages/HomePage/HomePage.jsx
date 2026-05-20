@@ -4,7 +4,7 @@ import { API_URL } from "../../constants";
 import { useState, useEffect, useRef } from "react";
 import { QuestionCardList } from "../../components/QuestionCardList";
 import { Loader } from "../../components/Loader";
-import { useFetch } from "../../hooks/useFetch";
+import { useFetch, parseJsonResponse } from "../../hooks/useFetch";
 import { SearchInput } from "../../components/SearchInput";
 import { useMemo } from "react";
 import { Button } from "../../components/Button";
@@ -21,7 +21,7 @@ function HomePage() {
 
   const [getQuestions, isLoading, error] = useFetch(async (url) => {
     const response = await fetch(`${API_URL}/${url}`);
-    const data = await response.json();
+    const data = await parseJsonResponse(response);
     const totalCount =
       Number(response.headers.get("X-Total-Count")) || data.length;
     const params = new URLSearchParams(url.split("?")[1] || "");
