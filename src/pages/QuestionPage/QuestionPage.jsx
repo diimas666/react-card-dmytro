@@ -19,12 +19,24 @@ function QuestionPage() {
     setIsChecked(Boolean(data.completed));
     return data;
   });
+
+  const [updateCard, isCardUpdating] = useFetch(async (isChecked) => {
+    const response = await fetch(`${API_URL}/react/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ completed: isChecked }),
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await response.json();
+    setCard(data);
+  });
+
   const checkboxId = useId();
   const levelVariant =
     card?.level == 1 ? "primary" : card?.level == 2 ? "success" : card?.level == 3 ? "warning" : "alert";
 
   const onChangeCheckboxHandler = () => {
     setIsChecked(!isChecked);
+    updateCard(!isChecked);
   };
   useEffect(() => {
     fetchCard();
@@ -66,12 +78,16 @@ function QuestionPage() {
               className={styles.checkbox}
               checked={isChecked}
               onChange={onChangeCheckboxHandler}
-              disabled={false}
+              disabled={isCardUpdating}
             />
             <span>mark as completed</span>
           </label>
-          <Button onClick={() => navigate(`/editquestion/${card.id}`)}>Edit Question</Button>
-          <Button onClick={() => navigate("/")}>Back</Button>
+          <Button isDisabled={isCardUpdating} onClick={() => navigate(`/editquestion/${card.id}`)}>
+            Edit Question
+          </Button>
+          <Button isDisabled={isCardUpdating} onClick={() => navigate("/")}>
+            Back
+          </Button>
         </div>
       )}
     </>

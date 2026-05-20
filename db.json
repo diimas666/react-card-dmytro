@@ -11,7 +11,8 @@
       ],
       "level": 1,
       "completed": true,
-      "editDate": "03.02.2025, 19:49"
+      "editDate": "03.02.2025, 19:49",
+      "{\"completed\":false}": ""
     },
     {
       "id": "2",
@@ -23,7 +24,8 @@
       ],
       "level": 2,
       "completed": false,
-      "editDate": "03.02.2025, 20:25"
+      "editDate": "03.02.2025, 20:25",
+      "{\"completed\":true}": ""
     },
     {
       "id": "3",
