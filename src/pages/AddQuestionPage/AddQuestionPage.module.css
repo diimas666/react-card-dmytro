@@ -1,0 +1,46 @@
+.formTitle {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.formContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 10px;
+  background-color: #32323b;
+}
+/* form component */
+.form {
+  width: 100%;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+.formControl {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: flex-start;
+  align-items: stretch;
+
+  label {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-color);
+    text-align: left;
+    margin-bottom: 5px;
+  }
+  select,
+  textarea {
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #616175;
+  }
+}
